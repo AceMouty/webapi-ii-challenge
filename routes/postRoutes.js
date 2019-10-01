@@ -110,5 +110,35 @@ router.delete("/:id", (req, res) => {
     })
 })
 
+// PUT - /api/posts/:id : updates a specified post and returns the updated copy
+router.put("/:id", (req, res) => {
+    const postId = req.params.id;
+    const content = req.body
+
+    // Check that all data is passed in
+    if(!content.title || !content.contents){
+        res.status(400).json({ errorMessage: "Please provide title and contents for the post." })
+    }
+
+    Posts.findById(postId)
+    .then( post => {
+        console.log("FROM THE FINDBY", post)
+        if(post.length > 0){
+            Posts.update(postId, content)
+            .then(updated => {
+                if(updated !== 0){
+                    Posts.findById(postId)
+                    .then(updatedPost => {
+                        res.status(200).json({data: updatedPost})
+                    })
+                }
+            })
+            .catch(err => res.status(500).json({error: "The post information could not be modified."}))
+        } else {
+            res.status(404).json({ message: "The post with the specified ID does not exist." })
+        }
+    })
+})
+
 // Export the route to be used
 module.exports = router
