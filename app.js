@@ -1,7 +1,10 @@
 const express = require('express');
+const CORS = require('cors');
 const server = express();
-// Teach the servver to read json
+// Teach the server to read json
 server.use(express.json())
+// Setup cors in the application
+server.use(CORS())
 
 // Bring in routes
 const postRoutes = require('./routes/postRoutes')
