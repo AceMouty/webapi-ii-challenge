@@ -25,7 +25,7 @@ router.post('/', (req, res) => {
     })
 })
 
-// POST - /api/posts/:id/comments
+// POST - /api/posts/:id/comments: adds a new comment to a post
 router.post("/:id/comments", (req, res) => {
     const postId = req.params.id;
     // Check for text property
@@ -62,7 +62,7 @@ router.get('/', (req, res) => {
     .catch(err => res.status(500).json({message: "The posts information could not be retrieved." }))
 })
 
-// GET - /api/post/:id
+// GET - /api/post/:id : get a specific post
 router.get("/:id", (req, res) => {
     const postID = req.params.id
     Posts.findById(postID)
@@ -78,7 +78,7 @@ router.get("/:id", (req, res) => {
     })
 })
 
-// GET - /api/posts/:id/comments
+// GET - /api/posts/:id/comments : get all comments for a specific post
 router.get("/:id/comments", (req, res) => {
     const postId = req.params.id
     Posts.findPostComments(postId)
@@ -91,6 +91,22 @@ router.get("/:id/comments", (req, res) => {
     })
     .catch(err => {
         res.status(500).json({error: "The comments information could not be retrieved."})
+    })
+})
+
+// DELETE - /api/post/:id : will delete a specific post
+router.delete("/:id", (req, res) => {
+    const postId = req.params.id
+
+    Posts.findById(postId)
+    .then(post => {
+        if(post.length > 0){
+            res.status(200).json({data: post[0]})
+            Posts.remove(postId)
+            .catch(err => res.status(500).json({error: "The post could not be removed"}))
+        } else {
+            res.status(404).json({message: "The post with the specified ID does not exist."})
+        }
     })
 })
 
