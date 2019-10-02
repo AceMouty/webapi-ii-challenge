@@ -11,7 +11,7 @@ function PostList() {
 
     // UseEffect: grabs all post from the db on inital render
     React.useEffect(() => {
-        axios.get("http://localhost:8000/api/posts")
+        axios.get("http://localhost:8001/api/posts")
         .then(res => {
             setPost(res.data.data)
         })

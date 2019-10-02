@@ -18,7 +18,12 @@ router.post('/', (req, res) => {
     // Create the post if the data is all there
     Posts.insert(req.body)
     .then(postId => {
-        res.status(201).json({data: postId})
+  
+        Posts.findById(postId.id)
+        .then(newPost => {
+            res.status(201).json({data: newPost})
+        })
+        
     })
     .catch(err => {
         res.status(500).json({error: "There was an error while saving the post to the database", dbError: err})
@@ -27,18 +32,22 @@ router.post('/', (req, res) => {
 
 // POST - /api/posts/:id/comments: adds a new comment to a post
 router.post("/:id/comments", (req, res) => {
-    const postId = req.params.id;
+    const postId = req.body.post_id;
     // Check for text property
     if(!req.body.text){
         res.status(400).json({errorMessage: "Please provide text for the comment." })
+    } else if (postId != req.params.id) {
+        res.status(400).json({message: "The post_id does not match"})
     }
     // Find the post for the ID passed in the body
     Posts.findById(postId)
     .then(post => {
+        console.log(post)
         // If post exist insert it and return the new comment else res with an err
-        if(post.id){
+        if(post.length > 0){
             Posts.insertComment(req.body)
             .then( commentId => {
+                console.log(commentId)
                 Posts.findCommentById(commentId.id)
                 .then(newComment => {
                     res.status(201).json({data: newComment});
